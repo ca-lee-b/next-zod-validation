@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">next-zod-validator</h1>
+  <h1 align="center">next-zod-validation</h1>
 </p>
 
 This package provides a helper function to automatically validate Zod schemas and provide typesafety in route handlers
@@ -9,21 +9,14 @@ This package provides a helper function to automatically validate Zod schemas an
 To install:
 
 ```sh
-# If you use npm
-npm install next-zod-validator
-
-# If you use yarn
-yarn add next-zod-validator
-
-# If you use pnpm
-pnpm add next-zod-validator
+npm install next-zod-validation
 ```
 
 ## Usage
 
 ```ts
 // app/api/[slug]/route.ts
-import { withValidation } from 'next-zod-validator';
+import { withValidation } from 'next-zod-validation';
 import { z } from 'zod';
 
 const bodySchema = z.object({
