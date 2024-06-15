@@ -16,7 +16,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tronite/style-guide": "^0.0.13",
     "prettier": "^3.3.2",
     "tsup": "^8.1.0",
     "typescript": "^5.4.5"
