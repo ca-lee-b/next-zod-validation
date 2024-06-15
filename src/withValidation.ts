@@ -1,9 +1,14 @@
-import { type ZodObject, z } from 'zod';
+import { type ZodObject, z } from "zod";
 
-import { InferOrUndefined } from './utils';
+import { InferOrUndefined } from "./utils";
 
 export interface WithValidationHandler<BodyType, ParamType, QueryType> {
-  (options: { req: Request; body: BodyType; params: ParamType; query: QueryType }): Promise<Response>;
+  (options: {
+    req: Request;
+    body: BodyType;
+    params: ParamType;
+    query: QueryType;
+  }): Promise<Response>;
 }
 
 export interface WithValidationOptions<BodyType, ParamType, QueryType> {
@@ -12,7 +17,7 @@ export interface WithValidationOptions<BodyType, ParamType, QueryType> {
   query?: QueryType;
   options?: {
     messages?: {
-      [key in 'body' | 'params' | 'query']?: string;
+      [key in "body" | "params" | "query"]?: string;
     };
   };
 }
@@ -33,7 +38,11 @@ export function withValidation<
   QueryType extends ZodObject<any> | undefined,
 >(
   schemas: WithValidationOptions<BodyType, ParamType, QueryType>,
-  handler: WithValidationHandler<InferOrUndefined<BodyType>, InferOrUndefined<ParamType>, InferOrUndefined<QueryType>>,
+  handler: WithValidationHandler<
+    InferOrUndefined<BodyType>,
+    InferOrUndefined<ParamType>,
+    InferOrUndefined<QueryType>
+  >,
 ) {
   return async (
     req: Request,
@@ -51,26 +60,44 @@ export function withValidation<
         const parsedBody = await schemas.body.safeParseAsync(data);
 
         if (!parsedBody.success) {
-          return new Response(JSON.stringify({ message: schemas.options?.messages?.body ?? 'Bad Request' }), {
-            status: 400,
-          });
+          return new Response(
+            JSON.stringify({
+              message: schemas.options?.messages?.body ?? "Bad Request",
+            }),
+            {
+              status: 400,
+            },
+          );
         }
 
         parsed.body = parsedBody.data as InferOrUndefined<BodyType>;
       } catch (e) {
         if (e instanceof SyntaxError) {
-          return new Response(JSON.stringify({ message: 'Invalid JSON in body' }), { status: 400 });
+          return new Response(
+            JSON.stringify({ message: "Invalid JSON in body" }),
+            { status: 400 },
+          );
         }
-        return new Response(JSON.stringify({ message: schemas.options?.messages?.body ?? 'Bad Request' }), {
-          status: 400,
-        });
+        return new Response(
+          JSON.stringify({
+            message: schemas.options?.messages?.body ?? "Bad Request",
+          }),
+          {
+            status: 400,
+          },
+        );
       }
     }
     if (schemas.params && params) {
-      const parsedParams = await schemas.params.safeParseAsync(params['params']);
+      const parsedParams = await schemas.params.safeParseAsync(
+        params["params"],
+      );
       if (!parsedParams.success) {
         return new Response(
-          JSON.stringify({ message: schemas.options?.messages?.params ?? 'Bad Request Parameters' }),
+          JSON.stringify({
+            message:
+              schemas.options?.messages?.params ?? "Bad Request Parameters",
+          }),
           { status: 400 },
         );
       }
@@ -88,9 +115,14 @@ export function withValidation<
       const parsedQueries = await schemas.query.safeParseAsync(queryObject);
 
       if (!parsedQueries.success) {
-        return new Response(JSON.stringify({ message: schemas.options?.messages?.query ?? 'Bad Request Query' }), {
-          status: 400,
-        });
+        return new Response(
+          JSON.stringify({
+            message: schemas.options?.messages?.query ?? "Bad Request Query",
+          }),
+          {
+            status: 400,
+          },
+        );
       }
 
       parsed.query = parsedQueries.data as InferOrUndefined<QueryType>;
